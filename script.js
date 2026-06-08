@@ -1,5 +1,4 @@
 const http = require('http');
-const url = require('url');
 
 function isNaturalNumber(value) {
     if (value === undefined || value === null || value === '') return false;
@@ -15,13 +14,12 @@ function gcd(a, b) {
 }
 
 const server = http.createServer((req, res) => {
-    // Отключаем принудительный HTTPS
-    res.setHeader('Strict-Transport-Security', 'max-age=0');
+    const myURL = new URL(req.url, `http://${req.headers.host}`);
+    const pathname = myURL.pathname;
+    const x = myURL.searchParams.get('x');
+    const y = myURL.searchParams.get('y');
     
-    const parsedUrl = url.parse(req.url, true);
-    
-    if (parsedUrl.pathname === '/rx9950x_gmail_com') {
-        const { x, y } = parsedUrl.query;
+    if (pathname === '/rx9950x_gmail_com') {
         if (!isNaturalNumber(x) || !isNaturalNumber(y)) {
             res.writeHead(200, { 'Content-Type': 'text/plain' });
             res.end('NaN');
