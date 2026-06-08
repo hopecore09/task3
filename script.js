@@ -14,10 +14,11 @@ function gcd(a, b) {
     return a;
 }
 
-http.createServer((req, res) => {
-    const parsedUrl = url.parse(req.url, true);
+const server = http.createServer((req, res) => {
+    // Отключаем принудительный HTTPS
+    res.setHeader('Strict-Transport-Security', 'max-age=0');
     
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    const parsedUrl = url.parse(req.url, true);
     
     if (parsedUrl.pathname === '/rx9950x_gmail_com') {
         const { x, y } = parsedUrl.query;
@@ -31,6 +32,9 @@ http.createServer((req, res) => {
         res.end(String(result));
         return;
     }
+    
     res.writeHead(404);
     res.end('Not Found');
-}).listen(process.env.PORT || 3000);
+});
+
+server.listen(process.env.PORT || 3000);
