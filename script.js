@@ -1,29 +1,32 @@
-const express = require('express');
-const app = express();
+const http = require('http');
+const url = require('url');
+
+function isNaturalNumber(value) {
+    if (!value) return false;
+    const num = Number(value);
+    return Number.isInteger(num) && num > 0 && String(num) === value;
+}
 
 function gcd(a, b) {
-    return b ? gcd(b, a % b) : a;
+    while (b) { [a, b] = [b, a % b]; }
+    return a;
 }
 
-function isNatural(num) {
-    const n = parseInt(num);
-    return !isNaN(n) && n > 0 && n.toString() === num.toString();
-}
-
-app.get('/rx9950x_gmail_com', (req, res) => {
-    const { x, y } = req.query;
+http.createServer((req, res) => {
+    const { pathname, query } = url.parse(req.url, true);
     
-    if (isNatural(x) && isNatural(y)) {
-        const a = parseInt(x);
-        const b = parseInt(y);
-        const lcm = (a * b) / gcd(a, b);
-        res.type('text/plain').send(lcm.toString());
-    } else {
-        res.type('text/plain').send('NaN');
+    if (pathname === '/rx9950x_gmail_com') {
+        if (!isNaturalNumber(query.x) || !isNaturalNumber(query.y)) {
+            res.writeHead(200, { 'Content-Type': 'text/plain' });
+            res.end('NaN');
+            return;
+        }
+        const x = Number(query.x), y = Number(query.y);
+        res.writeHead(200, { 'Content-Type': 'text/plain' });
+        res.end(String((x * y) / gcd(x, y)));
+        return;
     }
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+    
+    res.writeHead(404);
+    res.end('Not Found');
+}).listen(process.env.PORT || 3000);
