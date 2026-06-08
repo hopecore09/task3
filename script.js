@@ -2,9 +2,11 @@ const http = require('http');
 const url = require('url');
 
 function isNaturalNumber(value) {
-    if (!value) return false;
-    const num = Number(value);
-    return Number.isInteger(num) && num > 0 && String(num) === value;
+    if (value === undefined || value === null || value === '') return false;
+    if (!/^\d+$/.test(value)) return false;
+    if (value.length > 15) return false;
+    const num = parseInt(value, 10);
+    return num > 0 && num <= Number.MAX_SAFE_INTEGER;
 }
 
 function gcd(a, b) {
@@ -13,20 +15,22 @@ function gcd(a, b) {
 }
 
 http.createServer((req, res) => {
-    const { pathname, query } = url.parse(req.url, true);
+    const parsedUrl = url.parse(req.url, true);
     
-    if (pathname === '/rx9950x_gmail_com') {
-        if (!isNaturalNumber(query.x) || !isNaturalNumber(query.y)) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    
+    if (parsedUrl.pathname === '/rx9950x_gmail_com') {
+        const { x, y } = parsedUrl.query;
+        if (!isNaturalNumber(x) || !isNaturalNumber(y)) {
             res.writeHead(200, { 'Content-Type': 'text/plain' });
             res.end('NaN');
             return;
         }
-        const x = Number(query.x), y = Number(query.y);
+        const result = (parseInt(x) * parseInt(y)) / gcd(parseInt(x), parseInt(y));
         res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.end(String((x * y) / gcd(x, y)));
+        res.end(String(result));
         return;
     }
-    
     res.writeHead(404);
     res.end('Not Found');
 }).listen(process.env.PORT || 3000);
