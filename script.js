@@ -16,16 +16,10 @@ function gcd(a, b) {
 const server = http.createServer((req, res) => {
     const myURL = new URL(req.url, `http://${req.headers.host}`);
     const pathname = myURL.pathname;
-    if (pathname === '/') {
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.end('OK');
-        return;
-    }
+    const x = myURL.searchParams.get('x');
+    const y = myURL.searchParams.get('y');
     
     if (pathname === '/rx9950x_gmail_com') {
-        const x = myURL.searchParams.get('x');
-        const y = myURL.searchParams.get('y');
-        
         if (!isNaturalNumber(x) || !isNaturalNumber(y)) {
             res.writeHead(200, { 'Content-Type': 'text/plain' });
             res.end('NaN');
@@ -41,6 +35,4 @@ const server = http.createServer((req, res) => {
     res.end('Not Found');
 });
 
-server.listen(5000, '0.0.0.0', () => {
-    console.log('LCM server running on port 5000');
-});
+server.listen(process.env.PORT || 3000);
